@@ -66,3 +66,6 @@ You can deploy to Vercel, Netlify, or your preferred provider. A `vercel.json` f
 ---
 
 © 2025 Coin Collection App. All rights reserved.
+=======
+# coin-collection-app
+
