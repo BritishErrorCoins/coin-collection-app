@@ -1,130 +1,106 @@
-// src/pages/AddCoins.jsx
-
-import React, { useState } from "react";
-import dataset from "../../public/GB_PreDecimal_dataset.json";
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
+import { addToCollection } from "../utils/dataUtils";
 import "../App.css";
 
 export default function AddCoins() {
-  const [formData, setFormData] = useState({
+  const [dataset, setDataset] = useState([]);
+  const [form, setForm] = useState({
     Denomination: "",
     Monarch: "",
     Metal: "",
-    Strike: "",
+    "Strike Type": "",
     Variety: "",
     Year: "",
-    Notes: "",
+    Notes: ""
   });
 
-  const getUniqueValues = (key) => {
-    const values = dataset.map((item) => item[key]).filter(Boolean);
-    return [...new Set(values)];
+  useEffect(() => {
+    fetch("/data/GB_PreDecimal_dataset.json")
+      .then((res) => res.json())
+      .then((data) => setDataset(data))
+      .catch((err) => console.error("Failed to load dataset", err));
+  }, []);
+
+  const getUniqueValues = (field) => {
+    return [...new Set(dataset.map((coin) => coin[field]).filter(Boolean))];
   };
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const collection = JSON.parse(localStorage.getItem("collection") || "[]");
-    localStorage.setItem("collection", JSON.stringify([...collection, formData]));
-    alert("✅ Coin added to My Collection.");
-    setFormData({
+    addToCollection(form);
+    setForm({
       Denomination: "",
       Monarch: "",
       Metal: "",
-      Strike: "",
+      "Strike Type": "",
       Variety: "",
       Year: "",
-      Notes: "",
+      Notes: ""
     });
   };
 
   return (
-    <div>
+    <div className="page">
       <Header />
-      <div className="container">
-        <h1 className="title">Add Coins</h1>
-        <form onSubmit={handleSubmit} className="form">
-          <div className="form-grid">
-            <label>
-              Denomination:
-              <select name="Denomination" value={formData.Denomination} onChange={handleChange} required>
-                <option value="">-- Select --</option>
-                {getUniqueValues("Denomination").map((value) => (
-                  <option key={value} value={value}>{value}</option>
-                ))}
-              </select>
-            </label>
+      <h2 className="page-title">Add Coins</h2>
+      <form className="form-container" onSubmit={handleSubmit}>
+        <select name="Denomination" value={form.Denomination} onChange={handleChange}>
+          <option value="">Select Denomination</option>
+          {getUniqueValues("Denomination").map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
 
-            <label>
-              Monarch:
-              <select name="Monarch" value={formData.Monarch} onChange={handleChange} required>
-                <option value="">-- Select --</option>
-                {getUniqueValues("Monarch").map((value) => (
-                  <option key={value} value={value}>{value}</option>
-                ))}
-              </select>
-            </label>
+        <select name="Monarch" value={form.Monarch} onChange={handleChange}>
+          <option value="">Select Monarch</option>
+          {getUniqueValues("Monarch").map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
 
-            <label>
-              Metal:
-              <select name="Metal" value={formData.Metal} onChange={handleChange} required>
-                <option value="">-- Select --</option>
-                {getUniqueValues("Metal").map((value) => (
-                  <option key={value} value={value}>{value}</option>
-                ))}
-              </select>
-            </label>
+        <select name="Metal" value={form.Metal} onChange={handleChange}>
+          <option value="">Select Metal</option>
+          {getUniqueValues("Metal").map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
 
-            <label>
-              Strike Type:
-              <select name="Strike" value={formData.Strike} onChange={handleChange} required>
-                <option value="">-- Select --</option>
-                {getUniqueValues("Strike").map((value) => (
-                  <option key={value} value={value}>{value}</option>
-                ))}
-              </select>
-            </label>
+        <select name="Strike Type" value={form["Strike Type"]} onChange={handleChange}>
+          <option value="">Select Strike Type</option>
+          {getUniqueValues("Strike Type").map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
 
-            <label>
-              Variety:
-              <select name="Variety" value={formData.Variety} onChange={handleChange}>
-                <option value="">-- Select --</option>
-                {getUniqueValues("Variety").map((value) => (
-                  <option key={value} value={value}>{value}</option>
-                ))}
-              </select>
-            </label>
+        <select name="Variety" value={form.Variety} onChange={handleChange}>
+          <option value="">Select Variety</option>
+          {getUniqueValues("Variety").map((value) => (
+            <option key={value}>{value}</option>
+          ))}
+        </select>
 
-            <label>
-              Year:
-              <input
-                type="text"
-                name="Year"
-                value={formData.Year}
-                onChange={handleChange}
-                required
-                placeholder="e.g. 1928"
-              />
-            </label>
+        <input
+          type="text"
+          name="Year"
+          value={form.Year}
+          onChange={handleChange}
+          placeholder="Enter Year"
+        />
 
-            <label className="notes-label">
-              Notes:
-              <textarea
-                name="Notes"
-                value={formData.Notes}
-                onChange={handleChange}
-                placeholder="Add optional notes here..."
-              />
-            </label>
-          </div>
+        <textarea
+          name="Notes"
+          value={form.Notes}
+          onChange={handleChange}
+          placeholder="Enter Notes"
+        />
 
-          <button type="submit" className="submit-button">Add to My Collection</button>
-        </form>
-      </div>
+        <button type="submit">Add to My Collection</button>
+      </form>
     </div>
   );
 }
