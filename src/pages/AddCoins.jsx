@@ -1,122 +1,127 @@
-import { useState } from "react";
+
+import { useEffect, useState } from "react";
 import Header from "../components/Header";
-import { getUniqueFromDataset } from "../utils/dataUtils";
-import dataset from "../../public/GB_PreDecimal_dataset.json";
 
 export default function AddCoins() {
+  const [dataset, setDataset] = useState([]);
   const [form, setForm] = useState({
-    denomination: "",
-    monarch: "",
-    metal: "",
-    strikeType: "",
-    variety: "",
-    year: "",
-    notes: ""
+    Denomination: "",
+    Monarch: "",
+    Metal: "",
+    "Strike Type": "",
+    Variety: "",
+    Year: "",
+    Notes: "",
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  // Fetch dataset JSON
+  useEffect(() => {
+    fetch("/GB_PreDecimal_dataset.json")
+      .then((res) => res.json())
+      .then((json) => setDataset(json));
+  }, []);
+
+  const getUnique = (field) => [
+    ...new Set(dataset.map((c) => c[field]).filter(Boolean)),
+  ];
+
+  const handleChange = (field, value) => {
+    setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newCoin = {
-      ...form,
-      id: Date.now()
-    };
-    const existing = JSON.parse(localStorage.getItem("collection") || "[]");
-    localStorage.setItem("collection", JSON.stringify([...existing, newCoin]));
-    alert("✅ Coin added to your collection.");
+    const stored = JSON.parse(localStorage.getItem("collection") || "[]");
+    localStorage.setItem("collection", JSON.stringify([...stored, form]));
+    alert("Coin added to your collection!");
     setForm({
-      denomination: "",
-      monarch: "",
-      metal: "",
-      strikeType: "",
-      variety: "",
-      year: "",
-      notes: ""
+      Denomination: "",
+      Monarch: "",
+      Metal: "",
+      "Strike Type": "",
+      Variety: "",
+      Year: "",
+      Notes: "",
     });
   };
 
-  const filteredByDenomination = dataset.filter(
-    (coin) => form.denomination === "" || coin.Denomination === form.denomination
+  const filteredMonarchs = getUnique("Monarch").filter(
+    (m) => !form.Denomination || dataset.some((c) => c.Denomination === form.Denomination && c.Monarch === m)
   );
 
-  const filteredByMonarch = filteredByDenomination.filter(
-    (coin) => form.monarch === "" || coin.Monarch === form.monarch
+  const filteredMetals = getUnique("Metal").filter(
+    (m) => !form.Monarch || dataset.some((c) => c.Monarch === form.Monarch && c.Metal === m)
   );
 
-  const filteredByMetal = filteredByMonarch.filter(
-    (coin) => form.metal === "" || coin.Metal === form.metal
+  const filteredStrikeTypes = getUnique("Strike Type").filter(
+    (s) => !form.Metal || dataset.some((c) => c.Metal === form.Metal && c["Strike Type"] === s)
   );
 
-  const filteredByStrike = filteredByMetal.filter(
-    (coin) => form.strikeType === "" || coin["Strike Type"] === form.strikeType
+  const filteredVarieties = getUnique("Variety").filter(
+    (v) => !form["Strike Type"] || dataset.some((c) => c["Strike Type"] === form["Strike Type"] && c.Variety === v)
   );
 
   return (
     <>
       <Header />
-      <main className="p-4 max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold mb-4 text-burgundy">Add Coin</h1>
+      <div className="p-4 max-w-xl mx-auto text-white">
+        <h1 className="text-2xl mb-4 font-semibold">Add a Coin</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <select name="denomination" value={form.denomination} onChange={handleChange} required className="w-full p-2 border">
+          <select value={form.Denomination} onChange={(e) => handleChange("Denomination", e.target.value)}>
             <option value="">Select Denomination</option>
-            {getUniqueFromDataset(dataset, "Denomination").map((d) => (
-              <option key={d} value={d}>{d}</option>
+            {getUnique("Denomination").map((d) => (
+              <option key={d}>{d}</option>
             ))}
           </select>
 
-          <select name="monarch" value={form.monarch} onChange={handleChange} required className="w-full p-2 border">
+          <select value={form.Monarch} onChange={(e) => handleChange("Monarch", e.target.value)}>
             <option value="">Select Monarch</option>
-            {getUniqueFromDataset(filteredByDenomination, "Monarch").map((m) => (
-              <option key={m} value={m}>{m}</option>
+            {filteredMonarchs.map((m) => (
+              <option key={m}>{m}</option>
             ))}
           </select>
 
-          <select name="metal" value={form.metal} onChange={handleChange} required className="w-full p-2 border">
+          <select value={form.Metal} onChange={(e) => handleChange("Metal", e.target.value)}>
             <option value="">Select Metal</option>
-            {getUniqueFromDataset(filteredByMonarch, "Metal").map((m) => (
-              <option key={m} value={m}>{m}</option>
+            {filteredMetals.map((m) => (
+              <option key={m}>{m}</option>
             ))}
           </select>
 
-          <select name="strikeType" value={form.strikeType} onChange={handleChange} required className="w-full p-2 border">
+          <select value={form["Strike Type"]} onChange={(e) => handleChange("Strike Type", e.target.value)}>
             <option value="">Select Strike Type</option>
-            {getUniqueFromDataset(filteredByMetal, "Strike Type").map((s) => (
-              <option key={s} value={s}>{s}</option>
+            {filteredStrikeTypes.map((s) => (
+              <option key={s}>{s}</option>
             ))}
           </select>
 
-          <select name="variety" value={form.variety} onChange={handleChange} className="w-full p-2 border">
+          <select value={form.Variety} onChange={(e) => handleChange("Variety", e.target.value)}>
             <option value="">Select Variety</option>
-            {getUniqueFromDataset(filteredByStrike, "Variety").map((v) => (
-              <option key={v} value={v}>{v}</option>
+            {filteredVarieties.map((v) => (
+              <option key={v}>{v}</option>
             ))}
           </select>
 
           <input
-            name="year"
-            value={form.year}
-            onChange={handleChange}
+            type="text"
             placeholder="Enter Year"
-            className="w-full p-2 border"
-            required
+            value={form.Year}
+            onChange={(e) => handleChange("Year", e.target.value)}
+            className="w-full p-2 text-black"
           />
 
           <textarea
-            name="notes"
-            value={form.notes}
-            onChange={handleChange}
-            placeholder="Notes (optional)"
-            className="w-full p-2 border"
+            placeholder="Notes"
+            value={form.Notes}
+            onChange={(e) => handleChange("Notes", e.target.value)}
+            className="w-full p-2 text-black"
           />
 
-          <button type="submit" className="bg-burgundy text-white px-4 py-2 rounded">
-            Add to My Collection
+          <button type="submit" className="bg-white text-black px-4 py-2 rounded">
+            Add Coin
           </button>
         </form>
-      </main>
+      </div>
     </>
   );
 }
