@@ -1,25 +1,13 @@
 
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import { formatPrice } from "../utils/format";
-
-const initialCollection = JSON.parse(localStorage.getItem("collection")) || [];
+import { useDataset } from "../hooks/useDataset";
 
 const getUnique = (list, key) => [...new Set(list.map(item => item[key]))];
 
 export default function Collection() {
   const [collection, setCollection] = useState([]);
-import { useDataset } from "../hooks/useDataset";
-
   useDataset("collection", setCollection);
-
-  // useEffect(() => {
-  fetch("https://raw.githubusercontent.com/BritishErrorCoins/coin-collection-app/main/public/data/GB_PreDecimal_dataset.json")
-    .then(res => res.json())
-    .then(data => {
-      localStorage.setItem("collection", JSON.stringify(data));
-      setCollection(data);
-    });
-}, []);
 
   const [filters, setFilters] = useState({ monarch: [], metal: [], type: [] });
 
@@ -34,23 +22,16 @@ import { useDataset } from "../hooks/useDataset";
 
   const clearFilters = () => setFilters({ monarch: [], metal: [], type: [] });
 
-  const filtered = useMemo(() => {
-    return collection.filter(c =>
-      (!filters.monarch.length || filters.monarch.includes(c.monarch)) &&
-      (!filters.metal.length || filters.metal.includes(c.metal)) &&
-      (!filters.type.length || filters.type.includes(c.type))
-    );
-  }, [collection, filters]);
+  const filtered = collection.filter(c =>
+    (!filters.monarch.length || filters.monarch.includes(c.Monarch)) &&
+    (!filters.metal.length || filters.metal.includes(c.Metal)) &&
+    (!filters.type.length || filters.type.includes(c["Strike Type"]))
+  );
 
-  const updateNote = (id, value) => {
-    setCollection(prev => prev.map(c => c.id === id ? { ...c, notes: value } : c));
-  };
-
-  const updatePrice = (id, value) => {
-    const parsed = parseFloat(value);
-    if (!isNaN(parsed)) {
-      setCollection(prev => prev.map(c => c.id === id ? { ...c, purchasePrice: parsed } : c));
-    }
+  const unique = {
+    monarch: getUnique(collection, "Monarch"),
+    metal: getUnique(collection, "Metal"),
+    type: getUnique(collection, "Strike Type")
   };
 
   const handleSell = (id) => {
@@ -68,10 +49,15 @@ import { useDataset } from "../hooks/useDataset";
     }
   };
 
-  const unique = {
-    monarch: getUnique(collection, "monarch"),
-    metal: getUnique(collection, "metal"),
-    type: getUnique(collection, "type")
+  const updateNote = (id, value) => {
+    setCollection(prev => prev.map(c => c.id === id ? { ...c, notes: value } : c));
+  };
+
+  const updatePrice = (id, value) => {
+    const parsed = parseFloat(value);
+    if (!isNaN(parsed)) {
+      setCollection(prev => prev.map(c => c.id === id ? { ...c, purchasePrice: parsed } : c));
+    }
   };
 
   return (
@@ -102,19 +88,26 @@ import { useDataset } from "../hooks/useDataset";
       <table className="w-full text-sm">
         <thead>
           <tr>
-            <th>Year</th><th>Denomination</th><th>Monarch</th><th>Type</th><th>Metal</th>
-            <th>Mintage</th><th>Purchase Price</th><th>Notes</th><th>Actions</th>
+            <th>Year</th>
+            <th>Denomination</th>
+            <th>Monarch</th>
+            <th>Type</th>
+            <th>Metal</th>
+            <th>Mintage</th>
+            <th>Purchase Price</th>
+            <th>Notes</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {filtered.map(coin => (
-            <tr key={coin.id}>
-              <td>{coin.year}</td>
-              <td>{coin.denomination}</td>
-              <td>{coin.monarch}</td>
-              <td>{coin.type}</td>
-              <td>{coin.metal}</td>
-              <td>{coin.mintage.toLocaleString()}</td>
+          {filtered.map((coin, index) => (
+            <tr key={index}>
+              <td>{coin.Year}</td>
+              <td>{coin.Denomination}</td>
+              <td>{coin.Monarch}</td>
+              <td>{coin["Strike Type"]}</td>
+              <td>{coin.Metal}</td>
+              <td>{coin.Mintage?.toLocaleString?.() ?? "-"}</td>
               <td>
                 <input
                   type="text"
@@ -126,13 +119,15 @@ import { useDataset } from "../hooks/useDataset";
               <td>
                 <input
                   type="text"
-                  value={coin.notes}
+                  value={coin.notes || ""}
                   onChange={(e) => updateNote(coin.id, e.target.value)}
                   className="w-full border rounded px-1"
                 />
               </td>
               <td>
-                <button onClick={() => handleSell(coin.id)} className="bg-green-500 text-white px-2 py-1 rounded">Sell</button>
+                <button onClick={() => handleSell(coin.id)} className="bg-green-500 text-white px-2 py-1 rounded">
+                  Sell
+                </button>
               </td>
             </tr>
           ))}
