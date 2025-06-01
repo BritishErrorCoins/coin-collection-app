@@ -1,17 +1,21 @@
-export function getLocalData(key, fallback = []) {
-  try {
-    const stored = localStorage.getItem(key);
-    return stored ? JSON.parse(stored) : fallback;
-  } catch (e) {
-    console.error(\`Failed to get local data for key "\${key}":\`, e);
-    return fallback;
-  }
-}
+// src/utils/storage.js
 
-export function setLocalData(key, value) {
+// Save data to localStorage
+export const saveToStorage = (key, data) => {
   try {
-    localStorage.setItem(key, JSON.stringify(value));
-  } catch (e) {
-    console.error(\`Failed to set local data for key "\${key}":\`, e);
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (error) {
+    console.error(`Error saving ${key} to storage:`, error);
   }
-}
+};
+
+// Load data from localStorage
+export const loadFromStorage = (key) => {
+  try {
+    const data = localStorage.getItem(key);
+    return data ? JSON.parse(data) : [];
+  } catch (error) {
+    console.error(`Error loading ${key} from storage:`, error);
+    return [];
+  }
+};
