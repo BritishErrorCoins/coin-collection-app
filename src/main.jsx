@@ -1,4 +1,3 @@
-
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -12,7 +11,7 @@ const App = () => (
   <Router>
     <UpdatePrompt />
     <Routes>
-      <Route path="/" element={<div className='p-4'>Welcome to the Coin Collection App</div>} />
+      <Route path="/" element={<Collection />} />
       <Route path="/collection" element={<Collection />} />
       <Route path="/sold" element={<Sold />} />
       <Route path="/missing" element={<Missing />} />
