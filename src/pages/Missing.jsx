@@ -6,7 +6,16 @@ const initialMissing = JSON.parse(localStorage.getItem("missing")) || [];
 const getUnique = (list, key) => [...new Set(list.map(item => item[key]))];
 
 export default function Missing() {
-  const [missing, setMissing] = useState(initialMissing);
+  const [missing, setMissing] = useState([]);
+useEffect(() => {
+  fetch("https://raw.githubusercontent.com/BritishErrorCoins/coin-missing-app/main/public/data/GB_PreDecimal_dataset.json")
+    .then(res => res.json())
+    .then(data => {
+      localStorage.setItem("missing", JSON.stringify(data));
+      setMissing(data);
+    });
+}, []);
+
   const [filters, setFilters] = useState({ monarch: [], metal: [], type: [] });
 
   const toggleFilter = (key, value) => {

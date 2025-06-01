@@ -7,7 +7,16 @@ const initialCollection = JSON.parse(localStorage.getItem("collection")) || [];
 const getUnique = (list, key) => [...new Set(list.map(item => item[key]))];
 
 export default function Collection() {
-  const [collection, setCollection] = useState(initialCollection);
+  const [collection, setCollection] = useState([]);
+useEffect(() => {
+  fetch("https://raw.githubusercontent.com/BritishErrorCoins/coin-collection-app/main/public/data/GB_PreDecimal_dataset.json")
+    .then(res => res.json())
+    .then(data => {
+      localStorage.setItem("collection", JSON.stringify(data));
+      setCollection(data);
+    });
+}, []);
+
   const [filters, setFilters] = useState({ monarch: [], metal: [], type: [] });
 
   const toggleFilter = (key, value) => {
