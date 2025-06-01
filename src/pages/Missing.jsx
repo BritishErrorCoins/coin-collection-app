@@ -1,24 +1,13 @@
 
-import React, { useState, useMemo } from "react";
-
-const initialMissing = JSON.parse(localStorage.getItem("missing")) || [];
+import React, { useState } from "react";
+import { useDataset } from "../hooks/useDataset";
 
 const getUnique = (list, key) => [...new Set(list.map(item => item[key]))];
 
 export default function Missing() {
   const [missing, setMissing] = useState([]);
-import { useDataset } from "../hooks/useDataset";
 
   useDataset("missing", setMissing);
-
-  // useEffect(() => {
-  fetch("https://raw.githubusercontent.com/BritishErrorCoins/coin-missing-app/main/public/data/GB_PreDecimal_dataset.json")
-    .then(res => res.json())
-    .then(data => {
-      localStorage.setItem("missing", JSON.stringify(data));
-      setMissing(data);
-    });
-}, []);
 
   const [filters, setFilters] = useState({ monarch: [], metal: [], type: [] });
 
@@ -33,18 +22,16 @@ import { useDataset } from "../hooks/useDataset";
 
   const clearFilters = () => setFilters({ monarch: [], metal: [], type: [] });
 
-  const filtered = useMemo(() => {
-    return missing.filter(c =>
-      (!filters.monarch.length || filters.monarch.includes(c.monarch)) &&
-      (!filters.metal.length || filters.metal.includes(c.metal)) &&
-      (!filters.type.length || filters.type.includes(c.type))
-    );
-  }, [missing, filters]);
+  const filtered = missing.filter(c =>
+    (!filters.monarch.length || filters.monarch.includes(c.Monarch)) &&
+    (!filters.metal.length || filters.metal.includes(c.Metal)) &&
+    (!filters.type.length || filters.type.includes(c["Strike Type"]))
+  );
 
   const unique = {
-    monarch: getUnique(missing, "monarch"),
-    metal: getUnique(missing, "metal"),
-    type: getUnique(missing, "type")
+    monarch: getUnique(missing, "Monarch"),
+    metal: getUnique(missing, "Metal"),
+    type: getUnique(missing, "Strike Type")
   };
 
   return (
@@ -79,14 +66,14 @@ import { useDataset } from "../hooks/useDataset";
           </tr>
         </thead>
         <tbody>
-          {filtered.map(coin => (
-            <tr key={coin.id}>
-              <td>{coin.year}</td>
-              <td>{coin.denomination}</td>
-              <td>{coin.monarch}</td>
-              <td>{coin.type}</td>
-              <td>{coin.metal}</td>
-              <td>{coin.mintage?.toLocaleString?.() ?? "-"}</td>
+          {filtered.map((coin, index) => (
+            <tr key={index}>
+              <td>{coin.Year}</td>
+              <td>{coin.Denomination}</td>
+              <td>{coin.Monarch}</td>
+              <td>{coin["Strike Type"]}</td>
+              <td>{coin.Metal}</td>
+              <td>{coin.Mintage?.toLocaleString?.() ?? "-"}</td>
             </tr>
           ))}
         </tbody>
