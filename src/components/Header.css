@@ -1,0 +1,39 @@
+
+/* Light Mode (default) */
+.header {
+  background-color: #800020; /* Burgundy */
+  color: #fff;
+  padding: 1rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Navigation links */
+.header a {
+  color: #fff;
+  text-decoration: none;
+  margin: 0 0.75rem;
+  font-weight: 500;
+}
+
+.header a:hover {
+  text-decoration: underline;
+}
+
+/* Dark Mode (when .dark class is on body or parent) */
+.dark .header {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+}
+
+.dark .header a {
+  color: #e0e0e0;
+}
+
+.dark .header a:hover {
+  color: #ffffff;
+}
