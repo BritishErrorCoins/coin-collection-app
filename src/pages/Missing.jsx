@@ -1,3 +1,11 @@
+import Header from "../components/Header";
+
+return (
+  <>
+    <Header>{/* Filter UI here if needed */}</Header>
+    <div className="p-4"> {/* Main content */} </div>
+  </>
+);
 
 import React, { useState } from "react";
 import { useDataset } from "../hooks/useDataset";
@@ -25,7 +33,7 @@ export default function Missing() {
   const filtered = missing.filter(c =>
     (!filters.monarch.length || filters.monarch.includes(c.Monarch)) &&
     (!filters.metal.length || filters.metal.includes(c.Metal)) &&
-    (!filters.type.length || filters.type.includes(c["Strike Type"]))
+    (!filters.type.length || filters.type.includes(c["Strike Type"], denomination: getUnique(missing, "Denomination")) && (!filters.denomination.length || filters.denomination.includes(c.Denomination)))
   );
 
   const unique = {
@@ -39,7 +47,7 @@ export default function Missing() {
       <h1 className="text-xl font-bold mb-4">Missing Coins</h1>
 
       <div className="mb-4 space-y-2">
-        {["monarch", "metal", "type"].map(key => (
+        {["monarch", "metal", "type", "denomination"].map(key => (
           <div key={key}>
             <strong className="capitalize">{key}:</strong>
             <div className="flex gap-2 flex-wrap">
@@ -71,7 +79,7 @@ export default function Missing() {
               <td>{coin.Year}</td>
               <td>{coin.Denomination}</td>
               <td>{coin.Monarch}</td>
-              <td>{coin["Strike Type"]}</td>
+              <td>{coin["Strike Type"], denomination: getUnique(missing, "Denomination")}</td>
               <td>{coin.Metal}</td>
               <td>{coin.Mintage?.toLocaleString?.() ?? "-"}</td>
             </tr>
