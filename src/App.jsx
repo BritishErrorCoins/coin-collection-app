@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AddCoins from "./pages/AddCoins";
-import Catalog from "./pages/Catalog";
-import MyCollection from "./pages/Collection";
-import Sold from "./pages/Sold";
+import Catalog from "./pages/catalog";
+import MyCollection from "./pages/collection";
+import Sold from "./pages/sold";
 import MyWantlist from "./pages/MyWantlist";
 import Wantlist from "./pages/Wantlist";
 
