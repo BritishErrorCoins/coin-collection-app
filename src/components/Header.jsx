@@ -1,19 +1,31 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import "./Header.css"; // Optional for styling
+import React, { useEffect, useState } from "react";
+import "../App.css"; // or "./Header.css" if preferred
 
 export default function Header() {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (darkMode) {
+      root.classList.add("dark-mode");
+    } else {
+      root.classList.remove("dark-mode");
+    }
+  }, [darkMode]);
+
   return (
     <header className="header">
+      <h1>🪙 Coin Collection App</h1>
       <nav className="nav">
-        <ul>
-          <li><Link to="/">Add Coins</Link></li>
-          <li><Link to="/mycollection">My Collection</Link></li>
-          <li><Link to="/catalog">Catalog</Link></li>
-          <li><Link to="/mywantlist">My Wantlist</Link></li>
-          <li><Link to="/sold">Sold</Link></li>
-        </ul>
+        <a href="/">Add Coins</a>
+        <a href="/mycollection">My Collection</a>
+        <a href="/catalog">Catalog</a>
+        <a href="/mywantlist">My Wantlist</a>
+        <a href="/sold">Sold</a>
       </nav>
+      <button className="dark-mode-toggle" onClick={() => setDarkMode(!darkMode)}>
+        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
+      </button>
     </header>
   );
 }
