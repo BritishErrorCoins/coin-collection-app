@@ -1,3 +1,11 @@
+import Header from "../components/Header";
+
+return (
+  <>
+    <Header>{/* Filter UI here if needed */}</Header>
+    <div className="p-4"> {/* Main content */} </div>
+  </>
+);
 
 import React from "react";
 import { Link } from "react-router-dom";

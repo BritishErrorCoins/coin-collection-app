@@ -1,91 +1,106 @@
-import Header from "../components/Header";
-
-return (
-  <>
-    <Header>{/* Filter UI here if needed */}</Header>
-    <div className="p-4"> {/* Main content */} </div>
-  </>
-);
 
 import React, { useState } from "react";
 import { useDataset } from "../hooks/useDataset";
-
-const getUnique = (list, key) => [...new Set(list.map(item => item[key]))];
+import { formatPrice } from "../utils/format";
+import Header from "../components/Header";
 
 export default function Missing() {
   const [missing, setMissing] = useState([]);
+  const [filters, setFilters] = useState({
+    monarch: [],
+    metal: [],
+    type: [],
+    denomination: []
+  });
 
   useDataset("missing", setMissing);
 
-  const [filters, setFilters] = useState({ monarch: [], metal: [], type: [] });
+  const getUnique = (items, key) =>
+    [...new Set(items.map(item => item[key]).filter(Boolean))];
 
   const toggleFilter = (key, value) => {
-    setFilters(prev => ({
-      ...prev,
-      [key]: prev[key].includes(value)
+    setFilters(prev => {
+      const values = prev[key].includes(value)
         ? prev[key].filter(v => v !== value)
-        : [...prev[key], value]
-    }));
+        : [...prev[key], value];
+      return { ...prev, [key]: values };
+    });
   };
 
-  const clearFilters = () => setFilters({ monarch: [], metal: [], type: [] });
+  const clearFilters = () => {
+    setFilters({ monarch: [], metal: [], type: [], denomination: [] });
+  };
 
-  const filtered = missing.filter(c =>
+  const matchesFilters = (c) =>
     (!filters.monarch.length || filters.monarch.includes(c.Monarch)) &&
     (!filters.metal.length || filters.metal.includes(c.Metal)) &&
-    (!filters.type.length || filters.type.includes(c["Strike Type"], denomination: getUnique(missing, "Denomination")) && (!filters.denomination.length || filters.denomination.includes(c.Denomination)))
-  );
-
-  const unique = {
-    monarch: getUnique(missing, "Monarch"),
-    metal: getUnique(missing, "Metal"),
-    type: getUnique(missing, "Strike Type")
-  };
+    (!filters.type.length || filters.type.includes(c["Strike Type"])) &&
+    (!filters.denomination.length || filters.denomination.includes(c.Denomination));
 
   return (
-    <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Missing Coins</h1>
-
-      <div className="mb-4 space-y-2">
-        {["monarch", "metal", "type", "denomination"].map(key => (
-          <div key={key}>
-            <strong className="capitalize">{key}:</strong>
-            <div className="flex gap-2 flex-wrap">
-              {unique[key].map(value => (
-                <label key={value} className="flex items-center gap-1">
+    <>
+      <Header>
+        <div className="flex flex-wrap gap-4">
+          {["monarch", "metal", "type", "denomination"].map(field => (
+            <div key={field}>
+              <label className="block text-xs font-semibold mb-1 capitalize">{field}</label>
+              {getUnique(missing, field === "type" ? "Strike Type" : field.charAt(0).toUpperCase() + field.slice(1)).map(value => (
+                <label key={value} className="block text-xs">
                   <input
                     type="checkbox"
-                    checked={filters[key].includes(value)}
-                    onChange={() => toggleFilter(key, value)}
+                    checked={filters[field].includes(value)}
+                    onChange={() => toggleFilter(field, value)}
+                    className="mr-1"
                   />
                   {value}
                 </label>
               ))}
             </div>
-          </div>
-        ))}
-        <button onClick={clearFilters} className="bg-gray-200 rounded px-2 py-1 mt-2">Clear Filters</button>
-      </div>
-
-      <table className="w-full text-sm">
-        <thead>
-          <tr>
-            <th>Year</th><th>Denomination</th><th>Monarch</th><th>Type</th><th>Metal</th><th>Mintage</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filtered.map((coin, index) => (
-            <tr key={index}>
-              <td>{coin.Year}</td>
-              <td>{coin.Denomination}</td>
-              <td>{coin.Monarch}</td>
-              <td>{coin["Strike Type"], denomination: getUnique(missing, "Denomination")}</td>
-              <td>{coin.Metal}</td>
-              <td>{coin.Mintage?.toLocaleString?.() ?? "-"}</td>
-            </tr>
           ))}
-        </tbody>
-      </table>
-    </div>
+          <div className="self-end">
+            <button
+              onClick={clearFilters}
+              className="bg-white text-[#800020] px-3 py-1 rounded border border-white hover:bg-[#ffe6e6]"
+            >
+              Clear Filters
+            </button>
+          </div>
+        </div>
+      </Header>
+
+      <div className="p-4">
+        <h1 className="text-xl font-bold mb-4 text-[#800020]">My Missing</h1>
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="bg-[#f8e6e6] text-[#800020]">
+              <th>Year</th>
+              <th>Denomination</th>
+              <th>Monarch</th>
+              <th>Type</th>
+              <th>Metal</th>
+              <th>Mintage</th>
+              <th>Purchase Price</th>
+              <th>Notes</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {missing.filter(matchesFilters).map((coin) => (
+              <tr key={coin.id}>
+                <td>{coin.Year}</td>
+                <td>{coin.Denomination}</td>
+                <td>{coin.Monarch}</td>
+                <td>{coin["Strike Type"]}</td>
+                <td>{coin.Metal}</td>
+                <td>{coin.Mintage?.toLocaleString()}</td>
+                <td>{formatPrice(coin.purchasePrice)}</td>
+                <td>{coin.notes}</td>
+                <td>{/* Sell logic here */}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </>
   );
 }
