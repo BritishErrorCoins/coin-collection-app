@@ -1,4 +1,4 @@
-
+import AddCoin from "./pages/AddCoin";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -15,7 +15,7 @@ const App = () => (
     <UpdatePrompt />
     <NavBar />
     <Routes>
-      <Route path="/" element={<Dashboard />} />
+     <Route path="/" element={<AddCoin />} />
       <Route path="/collection" element={<Collection />} />
       <Route path="/sold" element={<Sold />} />
       <Route path="/missing" element={<Missing />} />
