@@ -7,7 +7,11 @@ const getUnique = (list, key) => [...new Set(list.map(item => item[key]))];
 
 export default function Missing() {
   const [missing, setMissing] = useState([]);
-useEffect(() => {
+import { useDataset } from "../hooks/useDataset";
+
+  useDataset("missing", setMissing);
+
+  // useEffect(() => {
   fetch("https://raw.githubusercontent.com/BritishErrorCoins/coin-missing-app/main/public/data/GB_PreDecimal_dataset.json")
     .then(res => res.json())
     .then(data => {

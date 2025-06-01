@@ -8,7 +8,11 @@ const getUnique = (list, key) => [...new Set(list.map(item => item[key]))];
 
 export default function Collection() {
   const [collection, setCollection] = useState([]);
-useEffect(() => {
+import { useDataset } from "../hooks/useDataset";
+
+  useDataset("collection", setCollection);
+
+  // useEffect(() => {
   fetch("https://raw.githubusercontent.com/BritishErrorCoins/coin-collection-app/main/public/data/GB_PreDecimal_dataset.json")
     .then(res => res.json())
     .then(data => {
