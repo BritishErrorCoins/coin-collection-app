@@ -1,21 +1,17 @@
 // src/utils/storage.js
 
-// Save data to localStorage
-export const saveToStorage = (key, data) => {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (error) {
-    console.error(`Error saving ${key} to storage:`, error);
-  }
-};
+export function getCollection() {
+  return JSON.parse(localStorage.getItem("collection") || "[]");
+}
 
-// Load data from localStorage
-export const loadFromStorage = (key) => {
-  try {
-    const data = localStorage.getItem(key);
-    return data ? JSON.parse(data) : [];
-  } catch (error) {
-    console.error(`Error loading ${key} from storage:`, error);
-    return [];
-  }
-};
+export function saveCollection(data) {
+  localStorage.setItem("collection", JSON.stringify(data));
+}
+
+export function getWantlist() {
+  return JSON.parse(localStorage.getItem("wantlist") || "[]");
+}
+
+export function saveWantlist(data) {
+  localStorage.setItem("wantlist", JSON.stringify(data));
+}
