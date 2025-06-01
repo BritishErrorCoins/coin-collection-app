@@ -1,32 +1,15 @@
-import Header from "../components/Header";
-
-return (
-  <>
-    <Header>{/* Filter UI here if needed */}</Header>
-    <div className="p-4"> {/* Main content */} </div>
-  </>
-);
-
+// src/pages/Dashboard.jsx
 import React from "react";
-import { Link } from "react-router-dom";
+import Header from "../components/Header";
 
 export default function Dashboard() {
   return (
-    <div className="p-6 space-y-4">
-      <h1 className="text-2xl font-bold">Welcome to your Coin Collection</h1>
-      <p className="text-gray-600">Track, manage, and explore your collection.</p>
-
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-        <Link to="/collection" className="bg-blue-50 border p-4 rounded shadow hover:bg-blue-100">
-          <h2 className="font-medium">📁 View Collection</h2>
-        </Link>
-        <Link to="/sold" className="bg-green-50 border p-4 rounded shadow hover:bg-green-100">
-          <h2 className="font-medium">💰 View Sold</h2>
-        </Link>
-        <Link to="/missing" className="bg-yellow-50 border p-4 rounded shadow hover:bg-yellow-100">
-          <h2 className="font-medium">📋 View Missing</h2>
-        </Link>
+    <>
+      <Header />
+      <div className="p-4">
+        <h1 className="text-2xl font-bold text-burgundy mb-4">Welcome to Your Coin Collection</h1>
+        <p className="text-burgundy">Use the navigation above to add coins, view your collection, or manage missing and sold items.</p>
       </div>
-    </div>
+    </>
   );
 }
