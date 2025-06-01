@@ -1,145 +1,161 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
-import { getUniqueOptionsFromDataset } from "../utils/dataUtils";
-import dataset from "../../public/GB_PreDecimal_dataset.json";
+import "../App.css";
 
-export default function Wantlist() {
+const datasetUrl = "/GB_PreDecimal_dataset.json";
+
+const Wantlist = () => {
+  const [coins, setCoins] = useState([]);
+  const [filteredVarieties, setFilteredVarieties] = useState([]);
   const [formData, setFormData] = useState({
-    Denomination: "",
-    Monarch: "",
-    Metal: "",
-    "Strike Type": "",
-    Variety: "",
-    Year: "",
-    Notes: "",
-    Reason: "",
-    OtherReason: "",
-  });
-
-  const [options, setOptions] = useState({
-    Denomination: [],
-    Monarch: [],
-    Metal: [],
-    "Strike Type": [],
-    Variety: [],
+    denomination: "",
+    monarch: "",
+    metal: "",
+    strikeType: "",
+    variety: "",
+    year: "",
+    reason: "",
+    otherReason: "",
+    notes: ""
   });
 
   useEffect(() => {
-    const newOptions = {
-      Denomination: getUniqueOptionsFromDataset(dataset, "Denomination"),
-      Monarch: getUniqueOptionsFromDataset(dataset, "Monarch"),
-      Metal: getUniqueOptionsFromDataset(dataset, "Metal"),
-      "Strike Type": getUniqueOptionsFromDataset(dataset, "Strike Type"),
-      Variety: getUniqueOptionsFromDataset(dataset, "Variety"),
-    };
-    setOptions(newOptions);
+    fetch(datasetUrl)
+      .then((res) => res.json())
+      .then((data) => setCoins(data));
   }, []);
+
+  useEffect(() => {
+    const filtered = coins.filter(
+      (coin) =>
+        (!formData.denomination || coin.Denomination === formData.denomination) &&
+        (!formData.monarch || coin.Monarch === formData.monarch) &&
+        (!formData.metal || coin.Metal === formData.metal) &&
+        (!formData.strikeType || coin["Strike Type"] === formData.strikeType)
+    );
+    const varieties = [...new Set(filtered.map((c) => c.Variety).filter(Boolean))];
+    setFilteredVarieties(varieties);
+  }, [formData.denomination, formData.monarch, formData.metal, formData.strikeType, coins]);
+
+  const getUnique = (arr, key) => [...new Set(arr.map((item) => item[key]).filter(Boolean))];
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleReasonChange = (e) => {
+    const { value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      reason: value,
+      otherReason: value === "Other" ? prev.otherReason : ""
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const wantlist = JSON.parse(localStorage.getItem("wantlist")) || [];
-    wantlist.push(formData);
-    localStorage.setItem("wantlist", JSON.stringify(wantlist));
-    alert("Added to Wantlist!");
+    const entry = {
+      ...formData,
+      reason:
+        formData.reason === "Other" ? formData.otherReason : formData.reason
+    };
+    const stored = JSON.parse(localStorage.getItem("myWantlist")) || [];
+    stored.push(entry);
+    localStorage.setItem("myWantlist", JSON.stringify(stored));
+    alert("Coin added to your Wantlist.");
     setFormData({
-      Denomination: "",
-      Monarch: "",
-      Metal: "",
-      "Strike Type": "",
-      Variety: "",
-      Year: "",
-      Notes: "",
-      Reason: "",
-      OtherReason: "",
+      denomination: "",
+      monarch: "",
+      metal: "",
+      strikeType: "",
+      variety: "",
+      year: "",
+      reason: "",
+      otherReason: "",
+      notes: ""
     });
   };
 
   return (
     <>
       <Header />
-      <div className="p-4 max-w-3xl mx-auto text-burgundy">
-        <h1 className="text-2xl font-semibold mb-4">My Wantlist</h1>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {Object.keys(options).map((key) => (
-            <div key={key}>
-              <label className="block font-medium">{key}</label>
-              <select
-                name={key}
-                value={formData[key]}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-2"
-              >
-                <option value="">Select {key}</option>
-                {options[key].map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
-              </select>
-            </div>
-          ))}
-          <div>
-            <label className="block font-medium">Year</label>
-            <input
-              type="text"
-              name="Year"
-              value={formData.Year}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            />
-          </div>
-          <div>
-            <label className="block font-medium">Notes</label>
-            <textarea
-              name="Notes"
-              value={formData.Notes}
-              onChange={handleChange}
-              className="w-full border border-gray-300 rounded px-3 py-2"
-            />
-          </div>
-          <div>
-            <label className="block font-medium">Reason</label>
-            <div className="space-y-1">
-              {["Missing from my collection", "Upgrade", "Desire duplicates", "Other"].map((reason) => (
-                <div key={reason} className="flex items-center space-x-2">
-                  <input
-                    type="radio"
-                    id={reason}
-                    name="Reason"
-                    value={reason}
-                    checked={formData.Reason === reason}
-                    onChange={handleChange}
-                  />
-                  <label htmlFor={reason}>{reason}</label>
-                </div>
-              ))}
-            </div>
-          </div>
-          {formData.Reason === "Other" && (
-            <div>
-              <label className="block font-medium">Other Reason</label>
+      <div className="page">
+        <h2>Add to Wantlist</h2>
+        <form onSubmit={handleSubmit}>
+          <select name="denomination" value={formData.denomination} onChange={handleChange}>
+            <option value="">Denomination</option>
+            {getUnique(coins, "Denomination").map((d) => (
+              <option key={d}>{d}</option>
+            ))}
+          </select>
+          <select name="monarch" value={formData.monarch} onChange={handleChange}>
+            <option value="">Monarch</option>
+            {getUnique(coins, "Monarch").map((m) => (
+              <option key={m}>{m}</option>
+            ))}
+          </select>
+          <select name="metal" value={formData.metal} onChange={handleChange}>
+            <option value="">Metal</option>
+            {getUnique(coins, "Metal").map((m) => (
+              <option key={m}>{m}</option>
+            ))}
+          </select>
+          <select name="strikeType" value={formData.strikeType} onChange={handleChange}>
+            <option value="">Strike Type</option>
+            {getUnique(coins, "Strike Type").map((s) => (
+              <option key={s}>{s}</option>
+            ))}
+          </select>
+          <select name="variety" value={formData.variety} onChange={handleChange}>
+            <option value="">Variety</option>
+            {filteredVarieties.map((v) => (
+              <option key={v}>{v}</option>
+            ))}
+          </select>
+          <input
+            name="year"
+            type="text"
+            placeholder="Year"
+            value={formData.year}
+            onChange={handleChange}
+          />
+          <fieldset>
+            <legend>Reason for Wanting</legend>
+            {["Missing from my collection", "Upgrade", "Desire duplicates", "Other"].map((r) => (
+              <label key={r}>
+                <input
+                  type="radio"
+                  name="reason"
+                  value={r}
+                  checked={formData.reason === r}
+                  onChange={handleReasonChange}
+                />
+                {r}
+              </label>
+            ))}
+            {formData.reason === "Other" && (
               <input
                 type="text"
-                name="OtherReason"
-                value={formData.OtherReason}
+                name="otherReason"
+                placeholder="Enter custom reason"
+                value={formData.otherReason}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded px-3 py-2"
               />
-            </div>
-          )}
-          <button
-            type="submit"
-            className="bg-burgundy text-white px-4 py-2 rounded hover:bg-opacity-90"
-          >
-            Add to Wantlist
-          </button>
+            )}
+          </fieldset>
+          <textarea
+            name="notes"
+            placeholder="Notes"
+            value={formData.notes}
+            onChange={handleChange}
+          />
+          <button type="submit">Add to Wantlist</button>
         </form>
       </div>
     </>
   );
-}
+};
+
+export default Wantlist;
