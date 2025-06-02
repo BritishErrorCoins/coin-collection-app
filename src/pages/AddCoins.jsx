@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../App.css";
+import "../styles/table.css";
 
 const datasetUrl = "/data/GB_PreDecimal_dataset.json";
 

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Header from "../components/Header";
 import { useDataset } from "../hooks/useDataset";
 import { useFormOptions } from "../hooks/useFormOptions";
+import "../styles/table.css";
 
 export default function Dashboard() {
   const [coins, setCoins] = useState([]);

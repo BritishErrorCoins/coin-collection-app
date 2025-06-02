@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import "../App.css";
+import "../styles/table.css";
 
 export default function Sold() {
   const [sold, setSold] = useState([]);
