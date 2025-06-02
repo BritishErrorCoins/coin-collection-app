@@ -1,101 +1,165 @@
-/* App.css */
-
-/* Light Theme */
-body {
-  background-color: #ffffff;
-  color: #222222;
+/* =======================
+   Burgundy Colour Palette
+   ======================= */
+:root {
+  --burgundy: #800020;
+  --burgundy-light: #a02040;
+  --burgundy-dark: #4b0010;
+  --header-bg: #f6e7ee;
+  --modal-bg: rgba(40, 0, 25, 0.6);
+  --bg-light: #fff8fa;
+  --border: #e0d0d7;
 }
 
-.header {
-  background-color: #f9f9f9;
-  padding: 1rem;
+/* =======================
+   Base Styles
+   ======================= */
+body {
+  margin: 0;
+  font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
+  background: var(--bg-light);
+  color: #221018;
+  min-height: 100vh;
+  transition: background 0.2s, color 0.2s;
+}
+
+a {
+  color: var(--burgundy);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover, .underline {
+  text-decoration: underline;
+  color: var(--burgundy-dark);
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Segoe UI Semibold', 'Roboto', Arial, sans-serif;
+  color: var(--burgundy-dark);
+  margin-top: 0;
+}
+
+header, .header {
+  background: var(--header-bg);
+  color: var(--burgundy-dark);
+  padding: 1.2rem 2rem 1.2rem 1rem;
+  box-shadow: 0 2px 8px rgba(128, 0, 32, 0.07);
   display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  min-height: 60px;
+}
+
+.logo {
+  height: 40px;
+  margin-right: 1.5rem;
+}
+
+.navbar {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
   align-items: center;
 }
 
-.nav a {
-  color: inherit;
-  margin: 0 0.75rem;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-.dark-mode-toggle {
-  background: transparent;
-  border: 1px solid #777;
-  padding: 0.4rem 1rem;
+.navbar a {
+  font-size: 1rem;
+  font-weight: 500;
+  padding: 4px 10px;
   border-radius: 4px;
-  cursor: pointer;
+  color: var(--burgundy-dark);
+  background: none;
 }
 
-/* 🌙 Dark Theme */
-.dark-mode body {
-  background-color: #121212;
-  color: #e0e0e0;
+.navbar a.active,
+.navbar a[aria-current="page"] {
+  background: var(--burgundy);
+  color: #fff !important;
 }
 
-.dark-mode .header {
-  background-color: #1e1e1e;
-}
-
-.dark-mode .nav a {
-  color: #e0e0e0;
-}
-
-.dark-mode .dark-mode-toggle {
-  color: #e0e0e0;
-  border-color: #aaa;
-}
-.add-coin-form {
-  background: #fff;
-  border-radius: 8px;
-  padding: 2rem;
-  max-width: 400px;
-  margin: 2rem auto;
-  box-shadow: 0 2px 12px rgba(163, 38, 56, 0.07);
-}
-
-.form-group {
-  display: flex;
-  flex-direction: column;
-  margin-bottom: 1.25rem;
-}
-
-.form-group label {
-  font-weight: bold;
-  margin-bottom: 0.3rem;
-  color: #a32638;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-  padding: 0.5em;
-  border: 1px solid #a32638;
-  border-radius: 4px;
-  font-size: 1em;
-  margin-top: 2px;
-}
-
-.form-group textarea {
-  min-height: 60px;
-  resize: vertical;
-}
-
-.burgundy-btn {
-  background: #a32638;
+.toggle-dark {
+  background: var(--burgundy-dark);
   color: #fff;
   border: none;
-  padding: 0.7em 1.4em;
   border-radius: 4px;
+  padding: 4px 12px;
+  margin-left: 1rem;
   cursor: pointer;
-  font-weight: bold;
-  margin-top: 0.5rem;
   transition: background 0.2s;
 }
-
-.burgundy-btn:hover {
-  background: #8e1d2b;
+.toggle-dark:hover {
+  background: #44101c;
 }
+
+/* =======================
+   Table Styles
+   ======================= */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.2rem 0 2rem 0;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 16px 0 rgba(80, 0, 32, 0.08);
+}
+
+th, td {
+  border-bottom: 1px solid var(--border);
+  padding: 0.75rem 0.5rem;
+  text-align: left;
+}
+
+th {
+  background: var(--header-bg);
+  color: var(--burgundy-dark);
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.01em;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+input[type="text"], input[type="number"], select, textarea {
+  font-size: 1rem;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: #f9f3f7;
+  color: #221018;
+  transition: border 0.15s;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--burgundy);
+  background: #fff;
+}
+
+/* For stacked form fields */
+.form-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+/* =======================
+   Button Styles
+   ======================= */
+.burgundy-btn, .burgundy-btn:visited {
+  background: var(--burgundy);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1.2rem;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  margin-right: 0.5rem;
+  transition: background 0.18s;
+  box-shadow: 0 2px 4px 0 rgba(128,0,32,0.06);
