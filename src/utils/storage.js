@@ -15,3 +15,13 @@ export function getWantlist() {
 export function saveWantlist(data) {
   localStorage.setItem("wantlist", JSON.stringify(data));
 }
+const SOLD_KEY = "mySold";
+
+export function getSold() {
+  try {
+    const raw = localStorage.getItem(SOLD_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
