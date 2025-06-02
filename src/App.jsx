@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MyCollection from "./pages/Collection";
+import MyCollection from "./pages/MyCollection";
 import Sold from "./pages/Sold";
 import Catalog from "./pages/Catalog";
 import AddCoins from "./pages/AddCoins";
