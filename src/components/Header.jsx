@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "../App.css"; // or "./Header.css" if preferred
 
 export default function Header() {
   const [darkMode, setDarkMode] = useState(false);
@@ -23,7 +22,11 @@ export default function Header() {
         <a href="/mywantlist">My Wantlist</a>
         <a href="/sold">Sold</a>
       </nav>
-      <button className="dark-mode-toggle" onClick={() => setDarkMode(!darkMode)}>
+      <button
+        className="dark-mode-toggle"
+        onClick={() => setDarkMode((m) => !m)}
+        aria-label="Toggle dark mode"
+      >
         {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
       </button>
     </header>

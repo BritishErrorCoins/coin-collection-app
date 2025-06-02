@@ -1,39 +1,90 @@
-
-/* Light Mode (default) */
 .header {
-  background-color: #800020; /* Burgundy */
-  color: #fff;
-  padding: 1rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  background-color: #fff;
+  color: #333;
+  padding: 1rem 2rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 2px solid #a32638; /* burgundy accent */
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 8px rgba(163, 38, 56, 0.05);
 }
 
-/* Navigation links */
-.header a {
-  color: #fff;
+.header h1 {
+  margin: 0;
+  font-size: 1.5rem;
+  letter-spacing: 1px;
+  font-weight: bold;
+  color: #a32638; /* burgundy */
+}
+
+.nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.nav a {
   text-decoration: none;
-  margin: 0 0.75rem;
+  color: #333;
   font-weight: 500;
+  padding: 0.3em 0.8em;
+  border-radius: 4px;
+  transition: background 0.2s, color 0.2s;
 }
 
-.header a:hover {
-  text-decoration: underline;
+.nav a:hover,
+.nav a.active {
+  background: #a32638;
+  color: #fff;
 }
 
-/* Dark Mode (when .dark class is on body or parent) */
-.dark .header {
-  background-color: #1a1a1a;
-  color: #e0e0e0;
+.dark-mode .header {
+  background-color: #231018;
+  color: #e6e6e6;
+  border-bottom: 2px solid #90233c;
+  box-shadow: 0 1px 8px rgba(144, 35, 60, 0.15);
 }
 
-.dark .header a {
-  color: #e0e0e0;
+.dark-mode .header h1 {
+  color: #ef546e;
 }
 
-.dark .header a:hover {
-  color: #ffffff;
+.dark-mode .nav a {
+  color: #e6e6e6;
+}
+
+.dark-mode .nav a:hover,
+.dark-mode .nav a.active {
+  background: #ef546e;
+  color: #231018;
+}
+
+.dark-mode-toggle {
+  background: transparent;
+  border: 1px solid #a32638;
+  color: #a32638;
+  padding: 0.5em 1em;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+
+.dark-mode .dark-mode-toggle {
+  border-color: #ef546e;
+  color: #ef546e;
+}
+
+@media (max-width: 700px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 0.7rem 1rem;
+  }
+  .nav {
+    gap: 0.7rem;
+    flex-wrap: wrap;
+  }
 }
