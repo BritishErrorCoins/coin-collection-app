@@ -4,7 +4,7 @@ import Sold from "./pages/Sold";
 import Catalog from "./pages/Catalog";
 import AddCoins from "./pages/AddCoins";
 import MyWantlist from "./pages/MyWantlist";
-import Wantlist from "./pages/Wantlist";
+
 
 function App() {
   return (
@@ -15,7 +15,6 @@ function App() {
         <Route path="/sold" element={<Sold />} />
         <Route path="/catalog" element={<Catalog />} />
         <Route path="/addcoins" element={<AddCoins />} />
-        <Route path="/wantlist" element={<Wantlist />} />
         <Route path="/mywantlist" element={<MyWantlist />} />
       </Routes>
     </Router>
