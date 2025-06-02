@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { useDataset } from "../hooks/useDataset";
 import { addToCollection, addToWantlist } from "../utils/dataUtils";
-import "../styles/table.css";
-import "../styles/table.css";
+
 
 export default function Catalog() {
   const [catalog, setCatalog] = useState([]);

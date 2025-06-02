@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/Header";
 import { formatPrice } from "../utils/format";
-import "../styles/table.css";
+
 
 const WANTLIST_KEY = "myWantlist";
 
