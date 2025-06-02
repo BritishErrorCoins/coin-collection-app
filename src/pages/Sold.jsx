@@ -42,5 +42,10 @@ export default function Sold() {
                 <td>{coin.notes}</td>
               </tr>
             ))}
-          </tbody>
-        </table
+                </tbody>
+    </table>
+  </div>
+);
+}
+
+export default Sold;
