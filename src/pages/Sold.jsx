@@ -1,58 +1,45 @@
-
 import React, { useEffect, useState } from "react";
-import { formatPrice } from "../utils/format";
 import Header from "../components/Header";
+import "../App.css";
 
 export default function Sold() {
   const [sold, setSold] = useState([]);
 
   useEffect(() => {
-    const stored = JSON.parse(localStorage.getItem("sold")) || [];
+    const stored = JSON.parse(localStorage.getItem("sold") || "[]");
     setSold(stored);
   }, []);
 
   return (
-    <>
+    <div>
       <Header />
-      <div className="p-4">
-        <h1 className="text-xl font-bold mb-4 text-[#800020]">Sold Coins</h1>
-        <table className="w-full text-sm">
+      <h2>Sold</h2>
+      {sold.length === 0 ? (
+        <div className="empty-state">No coins sold yet.</div>
+      ) : (
+        <table className="coin-table">
           <thead>
-            <tr className="bg-[#f8e6e6] text-[#800020]">
-              <th>Year</th>
+            <tr>
               <th>Denomination</th>
               <th>Monarch</th>
-              <th>Type</th>
               <th>Metal</th>
-              <th>Mintage</th>
-              <th>Purchase Price</th>
-              <th>Sell Price</th>
-              <th>Date Sold</th>
-              <th>Profit</th>
+              <th>Strike Type</th>
+              <th>Variety</th>
+              <th>Year</th>
               <th>Notes</th>
             </tr>
           </thead>
           <tbody>
-            {sold.map((coin, index) => (
-              <tr key={index}>
-                <td>{coin.Year}</td>
-                <td>{coin.Denomination}</td>
-                <td>{coin.Monarch}</td>
-                <td>{coin["Strike Type"]}</td>
-                <td>{coin.Metal}</td>
-                <td>{coin.Mintage?.toLocaleString()}</td>
-                <td>{formatPrice(coin.purchasePrice)}</td>
-                <td>{formatPrice(coin.sellPrice)}</td>
-                <td>{coin.dateSold}</td>
-                <td className={coin.profit >= 0 ? "text-green-600" : "text-red-600"}>
-                  {formatPrice(coin.profit)}
-                </td>
+            {sold.map(coin => (
+              <tr key={coin.id}>
+                <td>{coin.denomination}</td>
+                <td>{coin.monarch}</td>
+                <td>{coin.metal}</td>
+                <td>{coin.strikeType}</td>
+                <td>{coin.variety}</td>
+                <td>{coin.year}</td>
                 <td>{coin.notes}</td>
               </tr>
             ))}
           </tbody>
-        </table>
-      </div>
-    </>
-  );
-}
+        </table

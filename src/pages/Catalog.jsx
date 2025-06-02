@@ -3,7 +3,6 @@ import { useDataset } from "../hooks/useDataset";
 import Header from "../components/Header";
 import "../styles/table.css";
 
-// Helper to fetch or set localStorage collection
 function getCollection() {
   try {
     return JSON.parse(localStorage.getItem("collection")) || [];
@@ -15,16 +14,30 @@ function saveCollection(arr) {
   localStorage.setItem("collection", JSON.stringify(arr));
 }
 
+function getWantlist() {
+  try {
+    return JSON.parse(localStorage.getItem("wantlist")) || [];
+  } catch {
+    return [];
+  }
+}
+function saveWantlist(arr) {
+  localStorage.setItem("wantlist", JSON.stringify(arr));
+}
+
 export default function Catalog() {
   const [catalog, setCatalog] = useState([]);
+  const [promptOpen, setPromptOpen] = useState(false);
+  const [promptType, setPromptType] = useState(""); // 'wantlist' or 'collection'
+  const [selectedCoin, setSelectedCoin] = useState(null);
+  const [wantReason, setWantReason] = useState("");
+  const [wantOther, setWantOther] = useState("");
 
-  // Load dataset for catalog
   useDataset("catalog", setCatalog);
 
-  // Handler for Add button
-  const handleAdd = (coin) => {
+  const handleAddToCollection = (coin) => {
     let purchasePrice = prompt("Enter purchase price (£):");
-    if (purchasePrice === null) return; // Cancelled
+    if (purchasePrice === null) return;
     purchasePrice = purchasePrice.trim();
     if (!purchasePrice || isNaN(purchasePrice)) {
       alert("Invalid price.");
@@ -40,6 +53,33 @@ export default function Catalog() {
     const current = getCollection();
     saveCollection([...current, newCoin]);
     alert("Coin added to My Collection!");
+  };
+
+  // Handle Add to Wantlist with radio checklist
+  const openWantlistPrompt = (coin) => {
+    setSelectedCoin(coin);
+    setWantReason("");
+    setWantOther("");
+    setPromptOpen(true);
+  };
+
+  const handleWantlistSubmit = () => {
+    if (!wantReason) {
+      alert("Please select a reason.");
+      return;
+    }
+    let entry = {
+      ...selectedCoin,
+      reason: wantReason === "Other" ? wantOther : wantReason,
+      id: Date.now()
+    };
+    const wantlist = getWantlist();
+    saveWantlist([...wantlist, entry]);
+    setPromptOpen(false);
+    setSelectedCoin(null);
+    setWantReason("");
+    setWantOther("");
+    alert("Coin added to your Wantlist!");
   };
 
   return (
@@ -58,7 +98,7 @@ export default function Catalog() {
               <th>Strike Type</th>
               <th>Variety</th>
               <th>Mintage</th>
-              <th>Add</th>
+              <th></th> {/* Buttons will go here, but no heading label */}
             </tr>
           </thead>
           <tbody>
@@ -72,16 +112,54 @@ export default function Catalog() {
                 <td>{coin["Strike Type"]}</td>
                 <td>{coin.Variety}</td>
                 <td>{coin.Mintage}</td>
-                <td>
-                  <button className="add-btn" onClick={() => handleAdd(coin)}>
-                    Add
+                <td style={{ whiteSpace: "nowrap" }}>
+                  <button
+                    className="add-btn"
+                    style={{ marginRight: 8 }}
+                    onClick={() => handleAddToCollection(coin)}
+                  >
+                    Add to Collection
+                  </button>
+                  <button
+                    className="wantlist-btn"
+                    onClick={() => openWantlistPrompt(coin)}
+                  >
+                    Add to Wantlist
                   </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      </div>
-    </>
-  );
-}
+
+        {/* Modal-like prompt for wantlist reason */}
+        {promptOpen && (
+          <div className="modal-overlay">
+            <div className="modal">
+              <h2>Add to Wantlist</h2>
+              <form
+                onSubmit={e => {
+                  e.preventDefault();
+                  handleWantlistSubmit();
+                }}
+              >
+                <div>
+                  <label>
+                    <input
+                      type="radio"
+                      name="reason"
+                      value="Missing from my collection"
+                      checked={wantReason === "Missing from my collection"}
+                      onChange={e => setWantReason(e.target.value)}
+                    />
+                    Missing from my collection
+                  </label>
+                </div>
+                <div>
+                  <label>
+                    <input
+                      type="radio"
+                      name="reason"
+                      value="Upgrade"
+                      checked={wantReason === "Upgrade"}
+                      onChange={e =>
