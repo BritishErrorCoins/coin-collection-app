@@ -305,3 +305,44 @@ button:hover,
     padding: 0.6rem 0.5rem;
   }
 }
+.form-stacked {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--bg-light, #fff6f8);
+  border-radius: 1rem;
+  box-shadow: 0 2px 8px rgba(60, 0, 20, 0.08);
+}
+.form-stacked label {
+  display: flex;
+  flex-direction: column;
+  font-weight: bold;
+  color: var(--burgundy, #6a1326);
+}
+.input {
+  margin-top: 0.5rem;
+  border: 1px solid #c9a4b4;
+  border-radius: 0.4rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 1rem;
+  background: #fff;
+}
+.primary-button {
+  background: var(--burgundy, #6a1326);
+  color: #fff;
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.8rem 1.4rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-weight: bold;
+  transition: background 0.18s;
+}
+.primary-button:hover {
+  background: #a13e5c;
+}
+

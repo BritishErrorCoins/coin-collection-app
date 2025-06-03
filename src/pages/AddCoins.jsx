@@ -1,138 +1,204 @@
 import React, { useState, useEffect } from "react";
+import Header from "../components/Header";
 import "../App.css";
 
-
-const datasetUrl = "/data/GB_PreDecimal_dataset.json";
-
-function getUnique(items, key) {
-  return [...new Set(items.map(item => item[key]).filter(Boolean))];
-}
+const DATA_URL = "/data/GB_PreDecimal_dataset.json";
 
 export default function AddCoins() {
-  const [dataset, setDataset] = useState([]);
+  const [data, setData] = useState([]);
   const [form, setForm] = useState({
+    year: "",
     denomination: "",
     monarch: "",
+    type: "",
     metal: "",
-    strikeType: "",
     variety: "",
-    year: "",
-    notes: ""
+    notes: "",
   });
 
   useEffect(() => {
-    fetch(datasetUrl)
+    fetch(DATA_URL)
       .then(res => res.json())
-      .then(setDataset);
+      .then(setData)
+      .catch(() => setData([]));
   }, []);
 
-  // Dependent dropdowns logic
-  const filteredByDenomination = form.denomination
-    ? dataset.filter(item => item.Denomination === form.denomination)
-    : dataset;
-  const filteredByMonarch = form.monarch
-    ? filteredByDenomination.filter(item => item.Monarch === form.monarch)
-    : filteredByDenomination;
-  const filteredByMetal = form.metal
-    ? filteredByMonarch.filter(item => item.Metal === form.metal)
-    : filteredByMonarch;
-  const filteredByStrike = form.strikeType
-    ? filteredByMetal.filter(item => item["Strike Type"] === form.strikeType)
-    : filteredByMetal;
+  const denominations = [...new Set(data.map(c => c.Denomination))];
+  const monarchs = form.denomination
+    ? [...new Set(data.filter(c => c.Denomination === form.denomination).map(c => c.Monarch))]
+    : [];
+  const metals = form.denomination && form.monarch
+    ? [...new Set(data.filter(c =>
+        c.Denomination === form.denomination && c.Monarch === form.monarch
+      ).map(c => c.Metal))]
+    : [];
+  const types = form.denomination && form.monarch && form.metal
+    ? [...new Set(data.filter(c =>
+        c.Denomination === form.denomination &&
+        c.Monarch === form.monarch &&
+        c.Metal === form.metal
+      ).map(c => c["Strike Type"]))]
+    : [];
+  const varieties = form.denomination && form.monarch && form.metal && form.type
+    ? [...new Set(data.filter(c =>
+        c.Denomination === form.denomination &&
+        c.Monarch === form.monarch &&
+        c.Metal === form.metal &&
+        c["Strike Type"] === form.type
+      ).map(c => c.Variety))]
+    : [];
 
-  // Dropdown options
-  const denominations = getUnique(dataset, "Denomination");
-  const monarchs = getUnique(filteredByDenomination, "Monarch");
-  const metals = getUnique(filteredByMonarch, "Metal");
-  const strikeTypes = getUnique(filteredByMetal, "Strike Type");
-  const varieties = getUnique(filteredByStrike, "Variety");
-
-  const handleChange = (field, value) => {
+  function handleChange(e) {
+    const { name, value } = e.target;
     setForm(f => ({
       ...f,
-      [field]: value,
-      // Reset dependent fields
-      ...(field === "denomination" && { monarch: "", metal: "", strikeType: "", variety: "" }),
-      ...(field === "monarch" && { metal: "", strikeType: "", variety: "" }),
-      ...(field === "metal" && { strikeType: "", variety: "" }),
-      ...(field === "strikeType" && { variety: "" }),
+      [name]: value,
+      ...(name !== "notes"
+        ? {
+            ...(name === "denomination" ? { monarch: "", metal: "", type: "", variety: "" } : {}),
+            ...(name === "monarch" ? { metal: "", type: "", variety: "" } : {}),
+            ...(name === "metal" ? { type: "", variety: "" } : {}),
+            ...(name === "type" ? { variety: "" } : {}),
+          }
+        : {}),
     }));
-  };
+  }
 
-  const handleSubmit = e => {
+  function handleSubmit(e) {
     e.preventDefault();
-    // Add coin to My Collection (localStorage or API)
-    const collection = JSON.parse(localStorage.getItem("collection") || "[]");
-    collection.push({ ...form, id: Date.now() });
-    localStorage.setItem("collection", JSON.stringify(collection));
+    const collection = JSON.parse(localStorage.getItem("myCollection") || "[]");
+    collection.push({
+      ...form,
+      Denomination: form.denomination,
+      Monarch: form.monarch,
+      Metal: form.metal,
+      "Strike Type": form.type,
+      Variety: form.variety,
+      Year: form.year,
+      Notes: form.notes,
+    });
+    localStorage.setItem("myCollection", JSON.stringify(collection));
     setForm({
+      year: "",
       denomination: "",
       monarch: "",
+      type: "",
       metal: "",
-      strikeType: "",
       variety: "",
-      year: "",
-      notes: ""
+      notes: "",
     });
-    alert("Coin added to My Collection!");
-  };
+    alert("Coin added to your collection.");
+  }
 
   return (
     <div>
-      <h2>Add Coins</h2>
-      <form className="add-coin-form" onSubmit={handleSubmit}>
-        <div className="form-group">
-          <label>Denomination</label>
-          <select value={form.denomination} onChange={e => handleChange("denomination", e.target.value)}>
-            <option value="">Select</option>
-            {denominations.map(d => <option key={d} value={d}>{d}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Monarch</label>
-          <select value={form.monarch} onChange={e => handleChange("monarch", e.target.value)}>
-            <option value="">Select</option>
-            {monarchs.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Metal</label>
-          <select value={form.metal} onChange={e => handleChange("metal", e.target.value)}>
-            <option value="">Select</option>
-            {metals.map(m => <option key={m} value={m}>{m}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Strike Type</label>
-          <select value={form.strikeType} onChange={e => handleChange("strikeType", e.target.value)}>
-            <option value="">Select</option>
-            {strikeTypes.map(s => <option key={s} value={s}>{s}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Variety</label>
-          <select value={form.variety} onChange={e => handleChange("variety", e.target.value)}>
-            <option value="">Select</option>
-            {varieties.map(v => <option key={v} value={v}>{v}</option>)}
-          </select>
-        </div>
-        <div className="form-group">
-          <label>Year</label>
-          <input
-            type="text"
-            value={form.year}
-            onChange={e => handleChange("year", e.target.value)}
-          />
-        </div>
-        <div className="form-group">
-          <label>Notes</label>
-          <textarea
-            value={form.notes}
-            onChange={e => handleChange("notes", e.target.value)}
-          />
-        </div>
-        <button type="submit" className="burgundy-btn">Add Coin</button>
-      </form>
+      <Header pageTitle="Add Coins" />
+      <div className="content-area">
+        <h1 className="page-title">Add Coins</h1>
+        <form className="form-stacked" onSubmit={handleSubmit} autoComplete="off">
+          <label>
+            Year
+            <input
+              name="year"
+              type="text"
+              value={form.year}
+              onChange={handleChange}
+              className="input"
+              required
+            />
+          </label>
+          <label>
+            Denomination
+            <select
+              name="denomination"
+              value={form.denomination}
+              onChange={handleChange}
+              className="input"
+              required
+            >
+              <option value="">Select...</option>
+              {denominations.map(d => (
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Monarch
+            <select
+              name="monarch"
+              value={form.monarch}
+              onChange={handleChange}
+              className="input"
+              required
+              disabled={!form.denomination}
+            >
+              <option value="">Select...</option>
+              {monarchs.map(m => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Metal
+            <select
+              name="metal"
+              value={form.metal}
+              onChange={handleChange}
+              className="input"
+              required
+              disabled={!form.monarch}
+            >
+              <option value="">Select...</option>
+              {metals.map(m => (
+                <option key={m} value={m}>{m}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Strike Type
+            <select
+              name="type"
+              value={form.type}
+              onChange={handleChange}
+              className="input"
+              required
+              disabled={!form.metal}
+            >
+              <option value="">Select...</option>
+              {types.map(t => (
+                <option key={t} value={t}>{t}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Variety
+            <select
+              name="variety"
+              value={form.variety}
+              onChange={handleChange}
+              className="input"
+              required
+              disabled={!form.type}
+            >
+              <option value="">Select...</option>
+              {varieties.map(v => (
+                <option key={v} value={v}>{v}</option>
+              ))}
+            </select>
+          </label>
+          <label>
+            Notes
+            <textarea
+              name="notes"
+              value={form.notes}
+              onChange={handleChange}
+              className="input"
+              rows={2}
+            />
+          </label>
+          <button type="submit" className="primary-button">Add Coin</button>
+        </form>
+      </div>
     </div>
   );
 }
