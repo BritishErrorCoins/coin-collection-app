@@ -1,45 +1,69 @@
- (cd "$(git rev-parse --show-toplevel)" && git apply --3way <<'EOF' 
-diff --git a/.gitignore b/.gitignore
-index 1170717c1478bdeb91fe179e892ee76371ff88de..4770965fb497a7fc0465e97ec35ad15b0eeb55e1 100644
---- a/.gitignore
-+++ b/.gitignore
-@@ -112,25 +112,36 @@ dist
- 
- # Docusaurus cache and generated files
- .docusaurus
- 
- # Serverless directories
- .serverless/
- 
- # FuseBox cache
- .fusebox/
- 
- # DynamoDB Local files
- .dynamodb/
- 
- # TernJS port file
- .tern-port
- 
- # Stores VSCode versions used for testing VSCode extensions
- .vscode-test
- 
- # yarn v2
- .yarn/cache
- .yarn/unplugged
- .yarn/build-state.yml
- .yarn/install-state.gz
- .pnp.*
-+
-+# IDE/editor settings
-+.vscode/
-+.idea/
-+
-+# OS-generated files
-+.DS_Store
-+Thumbs.db
-+
-+# Vercel deployment folder
-+.vercel/
- 
-EOF
-)
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build output
+dist/
+.vite/
+build/
+coverage/
+
+# Vercel deployment
+.vercel/
+
+# Local env files
+.env
+.env.*
+!.env.example
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# OS generated files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Icon?
+
+# Misc
+*.log
+*.tsbuildinfo
+
+# Docusaurus, Serverless, DynamoDB, FuseBox, TernJS (if ever used)
+.docusaurus/
+.serverless/
+.dynamodb/
+.fusebox/
+.tern-port
+.vscode-test
+
+# Yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# Tailwind JIT cache
+.tailwindcss/
+
+# Optional: local databases
+*.sqlite
+*.sqlite3
+*.db
+
+# Optional: Mac-specific files
+.AppleDouble
+.LSOverride
+
+# Optional: test output
+test-output/
