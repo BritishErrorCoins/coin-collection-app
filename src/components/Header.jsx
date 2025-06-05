@@ -1,34 +1,36 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import { Link } from "react-router-dom";
+import logo from "./logo.gif";
 
-export default function Header() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    const root = document.documentElement;
-    if (darkMode) {
-      root.classList.add("dark-mode");
-    } else {
-      root.classList.remove("dark-mode");
-    }
-  }, [darkMode]);
-
+export default function Header({ darkMode, setDarkMode }) {
   return (
-    <header className="header">
-      <h1>🪙 Coin Collection App</h1>
-      <nav className="nav">
-        <a href="/">Add Coins</a>
-        <a href="/mycollection">My Collection</a>
-        <a href="/catalog">Catalog</a>
-        <a href="/mywantlist">My Wantlist</a>
-        <a href="/sold">Sold</a>
-      </nav>
-      <button
-        className="dark-mode-toggle"
-        onClick={() => setDarkMode((m) => !m)}
-        aria-label="Toggle dark mode"
-      >
-        {darkMode ? "☀️ Light Mode" : "🌙 Dark Mode"}
-      </button>
+    <header className="flex items-center justify-between py-3 px-6 bg-burgundy text-white shadow-md">
+      <div className="flex items-center gap-2">
+        <img src={logo} alt="Logo" className="h-8 w-8" />
+        <span className="text-xl font-bold tracking-tight">Predecimal Coins of Great Britain</span>
+      </div>
+      <div className="flex items-center gap-4">
+        <a
+          href="https://ko-fi.com/A0A2XPTPT"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center text-sm font-medium"
+        >
+          <img
+            src="https://ko-fi.com/img/githubbutton_sm.svg"
+            alt="Ko-fi"
+            className="h-6 mr-1"
+          />
+          Help keep this software free
+        </a>
+        <button
+          title="Toggle Day/Night Mode"
+          className="ml-4 border border-white rounded-full px-2 py-1 text-xs bg-burgundy/80"
+          onClick={() => setDarkMode((prev) => !prev)}
+        >
+          {darkMode ? "🌙" : "☀️"}
+        </button>
+      </div>
     </header>
   );
 }

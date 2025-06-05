@@ -1,9 +1,13 @@
-import React, { useState, useEffect, useMemo } from "react";
-import Header from "../components/Header";
-import "../App.css";
-import { DATA_URL } from "../utils/dataUtils";
+import React, { useState, useMemo } from "react";
+import { v4 as uuidv4 } from "uuid";
 
-export default function AddCoinForm({ dataset, onSubmit }) {
+// Example: Load your dataset with useDataset or context
+import { useDataset } from "../hooks/useDataset";
+
+export default function AddCoins() {
+  const [dataset, setDataset] = useState([]);
+  useDataset("masterDataset", setDataset); // Loads from DATA_URL
+
   const [form, setForm] = useState({
     year: "",
     denomination: "",
@@ -15,116 +19,77 @@ export default function AddCoinForm({ dataset, onSubmit }) {
     pricePaid: "",
   });
 
-  // --- Utility: Filter dataset based on form selections ---
-  const filterDataset = (filters) =>
-    dataset.filter((coin) => {
-      return Object.entries(filters).every(([key, val]) =>
-        val ? (coin[key] && coin[key].toString() === val) : true
-      );
-    });
+  const [showModal, setShowModal] = useState(false);
+  const [addedId, setAddedId] = useState(null);
 
-  // --- Dropdown option lists (filtered by all previous selections) ---
+  // Years: min-max from dataset
+  const years = useMemo(() => {
+    if (!dataset.length) return [];
+    const nums = dataset.map((c) => Number(c.year)).filter(Boolean);
+    if (!nums.length) return [];
+    const min = Math.min(...nums);
+    const max = Math.max(...nums);
+    return Array.from({ length: max - min + 1 }, (_, i) => (min + i).toString());
+  }, [dataset]);
 
-  // Denominations for selected year
+  // Dependent dropdowns
   const denominations = useMemo(() => {
     if (!form.year) return [];
-    const filtered = dataset.filter(
-      (coin) => coin.year && coin.year.toString() === form.year
-    );
-    return [...new Set(filtered.map((c) => c.denomination))].sort();
+    return [...new Set(dataset.filter(c => c.year && c.year.toString() === form.year).map(c => c.denomination))].sort();
   }, [dataset, form.year]);
 
-  // Monarchs for selected year & denomination
   const monarchs = useMemo(() => {
     if (!form.year || !form.denomination) return [];
-    const filtered = filterDataset({
-      year: form.year,
-      denomination: form.denomination,
-    });
-    return [...new Set(filtered.map((c) => c.monarch))].sort();
+    return [...new Set(dataset.filter(
+      c => c.year && c.year.toString() === form.year && c.denomination === form.denomination
+    ).map(c => c.monarch))].sort();
   }, [dataset, form.year, form.denomination]);
 
-  // Metals for selected year, denomination, monarch
   const metals = useMemo(() => {
     if (!form.year || !form.denomination || !form.monarch) return [];
-    const filtered = filterDataset({
-      year: form.year,
-      denomination: form.denomination,
-      monarch: form.monarch,
-    });
-    return [...new Set(filtered.map((c) => c.metal))].sort();
+    return [...new Set(dataset.filter(
+      c =>
+        c.year && c.year.toString() === form.year &&
+        c.denomination === form.denomination &&
+        c.monarch === form.monarch
+    ).map(c => c.metal))].sort();
   }, [dataset, form.year, form.denomination, form.monarch]);
 
-  // Strike Types for selected year, denomination, monarch, metal
   const strikeTypes = useMemo(() => {
     if (!form.year || !form.denomination || !form.monarch || !form.metal) return [];
-    const filtered = filterDataset({
-      year: form.year,
-      denomination: form.denomination,
-      monarch: form.monarch,
-      metal: form.metal,
-    });
-    return [...new Set(filtered.map((c) => c.strikeType))].sort();
+    return [...new Set(dataset.filter(
+      c =>
+        c.year && c.year.toString() === form.year &&
+        c.denomination === form.denomination &&
+        c.monarch === form.monarch &&
+        c.metal === form.metal
+    ).map(c => c.strikeType))].sort();
   }, [dataset, form.year, form.denomination, form.monarch, form.metal]);
 
-  // Varieties for selected year, denomination, monarch, metal, strikeType
   const varieties = useMemo(() => {
-    if (
-      !form.year ||
-      !form.denomination ||
-      !form.monarch ||
-      !form.metal ||
-      !form.strikeType
-    )
-      return [];
-    const filtered = filterDataset({
-      year: form.year,
-      denomination: form.denomination,
-      monarch: form.monarch,
-      metal: form.metal,
-      strikeType: form.strikeType,
-    });
-    return [...new Set(filtered.map((c) => c.variety))].sort();
-  }, [
-    dataset,
-    form.year,
-    form.denomination,
-    form.monarch,
-    form.metal,
-    form.strikeType,
-  ]);
+    if (!form.year || !form.denomination || !form.monarch || !form.metal || !form.strikeType) return [];
+    return [...new Set(dataset.filter(
+      c =>
+        c.year && c.year.toString() === form.year &&
+        c.denomination === form.denomination &&
+        c.monarch === form.monarch &&
+        c.metal === form.metal &&
+        c.strikeType === form.strikeType
+    ).map(c => c.variety))].sort();
+  }, [dataset, form.year, form.denomination, form.monarch, form.metal, form.strikeType]);
 
-  // --- Handlers ---
-
-  // Reset all dependent fields if a parent is changed
+  // Handlers
   const handleChange = (e) => {
     const { name, value } = e.target;
     let reset = {};
-    if (name === "year") {
-      reset = {
-        denomination: "",
-        monarch: "",
-        metal: "",
-        strikeType: "",
-        variety: "",
-      };
-    } else if (name === "denomination") {
-      reset = { monarch: "", metal: "", strikeType: "", variety: "" };
-    } else if (name === "monarch") {
-      reset = { metal: "", strikeType: "", variety: "" };
-    } else if (name === "metal") {
-      reset = { strikeType: "", variety: "" };
-    } else if (name === "strikeType") {
-      reset = { variety: "" };
-    }
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-      ...reset,
-    }));
+    if (name === "year") reset = { denomination: "", monarch: "", metal: "", strikeType: "", variety: "" };
+    else if (name === "denomination") reset = { monarch: "", metal: "", strikeType: "", variety: "" };
+    else if (name === "monarch") reset = { metal: "", strikeType: "", variety: "" };
+    else if (name === "metal") reset = { strikeType: "", variety: "" };
+    else if (name === "strikeType") reset = { variety: "" };
+    setForm((prev) => ({ ...prev, [name]: value, ...reset }));
   };
 
-  // Price Paid formatting
   const formatPrice = (value) => {
     let num = parseFloat(value.replace(/[^0-9.]/g, ""));
     if (isNaN(num)) return "";
@@ -147,161 +112,182 @@ export default function AddCoinForm({ dataset, onSubmit }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Strip £ for storage, force 2 decimals
     const priceValue = parseFloat(form.pricePaid.replace(/[^0-9.]/g, "")).toFixed(2);
-    onSubmit({
+    const entry = {
       ...form,
       pricePaid: priceValue,
+      id: uuidv4(),
+    };
+    // Add to My Collection in localStorage
+    const current = JSON.parse(localStorage.getItem("collection") || "[]");
+    current.push(entry);
+    localStorage.setItem("collection", JSON.stringify(current));
+    setAddedId(entry.id);
+    setShowModal(true);
+    setForm({
+      year: "",
+      denomination: "",
+      monarch: "",
+      metal: "",
+      strikeType: "",
+      variety: "",
+      notes: "",
+      pricePaid: "",
     });
   };
 
-  // --- Render ---
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 max-w-xl mx-auto p-6 bg-white rounded-2xl shadow-lg"
-    >
-      {/* 1. Year */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Year</label>
-        <input
-          type="text"
-          name="year"
-          value={form.year}
-          onChange={handleChange}
-          required
-          placeholder="e.g. 1967"
-          className="border rounded-lg px-3 py-2 w-full"
-        />
-      </div>
-      {/* 2. Denomination */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Denomination</label>
-        <select
-          name="denomination"
-          value={form.denomination}
-          onChange={handleChange}
-          required
-          disabled={!form.year}
-          className="border rounded-lg px-3 py-2 w-full"
+    <div className="max-w-xl mx-auto bg-white rounded-2xl shadow-lg p-6 mt-8">
+      <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4">
+        {/* 1. Year */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Year</label>
+          <select
+            name="year"
+            value={form.year}
+            onChange={handleChange}
+            required
+            className="border rounded-lg px-3 py-2 w-full"
+          >
+            <option value="">Select</option>
+            {years.map((y) => (
+              <option key={y} value={y}>{y}</option>
+            ))}
+          </select>
+        </div>
+        {/* 2. Denomination */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Denomination</label>
+          <select
+            name="denomination"
+            value={form.denomination}
+            onChange={handleChange}
+            required
+            disabled={!form.year}
+            className="border rounded-lg px-3 py-2 w-full"
+          >
+            <option value="">Select</option>
+            {denominations.map((d) => (
+              <option key={d} value={d}>{d}</option>
+            ))}
+          </select>
+        </div>
+        {/* 3. Monarch */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Monarch</label>
+          <select
+            name="monarch"
+            value={form.monarch}
+            onChange={handleChange}
+            required
+            disabled={!form.denomination}
+            className="border rounded-lg px-3 py-2 w-full"
+          >
+            <option value="">Select</option>
+            {monarchs.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+        {/* 4. Metal */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Metal</label>
+          <select
+            name="metal"
+            value={form.metal}
+            onChange={handleChange}
+            required
+            disabled={!form.monarch}
+            className="border rounded-lg px-3 py-2 w-full"
+          >
+            <option value="">Select</option>
+            {metals.map((m) => (
+              <option key={m} value={m}>{m}</option>
+            ))}
+          </select>
+        </div>
+        {/* 5. Strike Type */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Strike Type</label>
+          <select
+            name="strikeType"
+            value={form.strikeType}
+            onChange={handleChange}
+            required
+            disabled={!form.metal}
+            className="border rounded-lg px-3 py-2 w-full"
+          >
+            <option value="">Select</option>
+            {strikeTypes.map((s) => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
+        </div>
+        {/* 6. Variety */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Variety</label>
+          <select
+            name="variety"
+            value={form.variety}
+            onChange={handleChange}
+            required
+            disabled={!form.strikeType}
+            className="border rounded-lg px-3 py-2 w-full"
+          >
+            <option value="">Select</option>
+            {varieties.map((v) => (
+              <option key={v} value={v}>{v}</option>
+            ))}
+          </select>
+        </div>
+        {/* 7. Notes */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Notes</label>
+          <textarea
+            name="notes"
+            value={form.notes}
+            onChange={handleChange}
+            rows={2}
+            className="border rounded-lg px-3 py-2 w-full"
+          />
+        </div>
+        {/* 8. Price Paid */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Price Paid (£)</label>
+          <input
+            type="text"
+            name="pricePaid"
+            inputMode="decimal"
+            value={form.pricePaid}
+            onChange={handlePriceChange}
+            onBlur={handlePriceBlur}
+            placeholder="e.g. £12.00"
+            required
+            className="border rounded-lg px-3 py-2 w-full"
+          />
+        </div>
+        <button
+          type="submit"
+          className="bg-burgundy text-white rounded-2xl px-6 py-2 font-semibold shadow"
         >
-          <option value="">Select</option>
-          {denominations.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* 3. Monarch */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Monarch</label>
-        <select
-          name="monarch"
-          value={form.monarch}
-          onChange={handleChange}
-          required
-          disabled={!form.denomination}
-          className="border rounded-lg px-3 py-2 w-full"
-        >
-          <option value="">Select</option>
-          {monarchs.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* 4. Metal */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Metal</label>
-        <select
-          name="metal"
-          value={form.metal}
-          onChange={handleChange}
-          required
-          disabled={!form.monarch}
-          className="border rounded-lg px-3 py-2 w-full"
-        >
-          <option value="">Select</option>
-          {metals.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* 5. Strike Type */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Strike Type</label>
-        <select
-          name="strikeType"
-          value={form.strikeType}
-          onChange={handleChange}
-          required
-          disabled={!form.metal}
-          className="border rounded-lg px-3 py-2 w-full"
-        >
-          <option value="">Select</option>
-          {strikeTypes.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* 6. Variety */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Variety</label>
-        <select
-          name="variety"
-          value={form.variety}
-          onChange={handleChange}
-          required
-          disabled={!form.strikeType}
-          className="border rounded-lg px-3 py-2 w-full"
-        >
-          <option value="">Select</option>
-          {varieties.map((v) => (
-            <option key={v} value={v}>
-              {v}
-            </option>
-          ))}
-        </select>
-      </div>
-      {/* 7. Notes */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Notes</label>
-        <textarea
-          name="notes"
-          value={form.notes}
-          onChange={handleChange}
-          rows={2}
-          className="border rounded-lg px-3 py-2 w-full"
-        />
-      </div>
-      {/* 8. Price Paid */}
-      <div>
-        <label className="block text-sm font-medium mb-1">Price Paid (£)</label>
-        <input
-          type="text"
-          name="pricePaid"
-          inputMode="decimal"
-          value={form.pricePaid}
-          onChange={handlePriceChange}
-          onBlur={handlePriceBlur}
-          placeholder="e.g. £12.00"
-          required
-          className="border rounded-lg px-3 py-2 w-full"
-        />
-      </div>
-      {/* Submit */}
-      <button
-        type="submit"
-        className="bg-burgundy text-white rounded-2xl px-6 py-2 font-semibold shadow"
-      >
-        Add Coin
-      </button>
-    </form>
+          Add Coin
+        </button>
+      </form>
+      {showModal && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/40">
+          <div className="bg-white rounded-xl p-6 shadow-lg max-w-md w-full">
+            <div className="text-lg font-semibold mb-2">Coin Added!</div>
+            <div>Your coin was added with ID:</div>
+            <div className="font-mono text-burgundy my-2">{addedId}</div>
+            <button
+              className="mt-4 bg-burgundy text-white px-4 py-2 rounded-2xl"
+              onClick={() => setShowModal(false)}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
