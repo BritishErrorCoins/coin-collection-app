@@ -25,5 +25,5 @@ export function addToWantlist(newItem) {
   localStorage.setItem("wantlist", JSON.stringify(current));
 }
 
-export const DATA_URL = "/data/GB_PreDecimal_dataset.json";
-
+// ---- FIXED: No newline in URL below ----
+export const DATA_URL = "https://raw.githubusercontent.com/BritishErrorCoins/coin-collection-app/main/public/data/GB_PreDecimal_dataset.json";
