@@ -368,3 +368,95 @@ a {
 a:hover {
   color: #ff81ac;
 }
+/* Day mode (default, burgundy theme) */
+body,
+.bg-burgundy {
+  background-color: #f9f6f3;
+  color: #231821;
+}
+
+.bg-burgundy {
+  background-color: #781a2f !important;
+}
+
+.text-burgundy {
+  color: #781a2f !important;
+}
+
+a {
+  color: #b6465f;
+}
+a:hover {
+  color: #ff81ac;
+}
+
+/* Night mode (black & white, NO purple/burgundy at all) */
+body.dark,
+.dark,
+.dark .bg-burgundy,
+.dark main {
+  background: #111 !important;
+  color: #fff !important;
+}
+
+.dark header,
+.dark .bg-burgundy {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+.dark .text-burgundy,
+.dark a,
+.dark .font-bold,
+.dark .font-semibold {
+  color: #fff !important;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background: #222 !important;
+  color: #fff !important;
+  border-color: #333 !important;
+}
+
+/* Remove colored backgrounds in tables, buttons for night mode */
+.dark tr,
+.dark .bg-[#f9f6f3],
+.dark .bg-[#f3e2e6] {
+  background: #111 !important;
+  color: #fff !important;
+}
+.dark .rounded-2xl,
+.dark .rounded,
+.dark .shadow-lg,
+.dark .bg-white,
+.dark .bg-gray-300,
+.dark .bg-green-600,
+.dark .bg-yellow-600,
+.dark .bg-blue-600,
+.dark .bg-red-600 {
+  background: #222 !important;
+  color: #fff !important;
+}
+
+/* Buttons: outline only in night */
+.dark button {
+  background: transparent !important;
+  color: #fff !important;
+  border: 1.5px solid #fff !important;
+}
+.dark button:hover {
+  background: #333 !important;
+  color: #fff !important;
+}
+
+/* Ko-fi image unaffected */
+header img[src*="ko-fi"] {
+  background: transparent !important;
+}
+
+/* Misc */
+input, select, textarea {
+  outline: none;
+}
