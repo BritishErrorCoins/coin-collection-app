@@ -1,6 +1,9 @@
+
 import React, { useState, useMemo } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { useDataset } from "../hooks/useDataset";
+
+console.log("HELLO from BrowseCoins.jsx");
 
 const WANT_REASONS = ["Don’t have", "Upgrade", "Duplicate"];
 
