@@ -346,3 +346,25 @@ button:hover,
   background: #a13e5c;
 }
 
+body {
+  font-family: 'Segoe UI', sans-serif;
+}
+.bg-burgundy {
+  background-color: #781a2f !important;
+}
+.text-burgundy {
+  color: #781a2f !important;
+}
+.dark {
+  background-color: #231821 !important;
+  color: #f2e5e7;
+}
+.dark .bg-burgundy {
+  background-color: #4b0c18 !important;
+}
+a {
+  color: #b6465f;
+}
+a:hover {
+  color: #ff81ac;
+}
