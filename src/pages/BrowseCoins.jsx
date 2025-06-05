@@ -107,6 +107,7 @@ export default function BrowseCoins() {
       setDenomFilter("");
     }
   };
+console.log("Dataset for BrowseCoins:", dataset);
 
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-12">
