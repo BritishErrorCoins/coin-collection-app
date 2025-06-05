@@ -107,7 +107,9 @@ export default function BrowseCoins() {
       setDenomFilter("");
     }
   };
-console.log("Dataset for BrowseCoins:", dataset);
+
+  // ---- Debug log for data ----
+  console.log("Dataset for BrowseCoins:", dataset);
 
   return (
     <div className="max-w-6xl mx-auto mt-8 mb-12">
@@ -130,6 +132,8 @@ console.log("Dataset for BrowseCoins:", dataset);
       </div>
       <div className="flex flex-wrap gap-2 mb-4">
         <input
+          id="browse-search"
+          name="browse-search"
           type="text"
           className="border px-3 py-1 rounded-lg"
           placeholder="Search…"
@@ -138,6 +142,8 @@ console.log("Dataset for BrowseCoins:", dataset);
         />
         {["Monarch", "Year", "Metal"].map((key) => (
           <select
+            id={`browse-filter-${key.toLowerCase()}`}
+            name={`browse-filter-${key.toLowerCase()}`}
             key={key}
             className="border px-2 py-1 rounded-lg"
             value={filters[key] || ""}
@@ -219,8 +225,10 @@ console.log("Dataset for BrowseCoins:", dataset);
                         <div className="bg-white rounded-xl p-6 shadow-lg max-w-md w-full">
                           <div className="text-lg font-semibold mb-2">Add Coin</div>
                           <div className="mb-2">
-                            <label className="block text-sm mb-1">Price Paid (£)</label>
+                            <label htmlFor="add-price" className="block text-sm mb-1">Price Paid (£)</label>
                             <input
+                              id="add-price"
+                              name="add-price"
                               type="text"
                               className="border px-2 py-1 rounded w-full"
                               value={addPrice}
@@ -232,8 +240,10 @@ console.log("Dataset for BrowseCoins:", dataset);
                             />
                           </div>
                           <div className="mb-2">
-                            <label className="block text-sm mb-1">Notes</label>
+                            <label htmlFor="add-notes" className="block text-sm mb-1">Notes</label>
                             <textarea
+                              id="add-notes"
+                              name="add-notes"
                               className="border px-2 py-1 rounded w-full"
                               rows={2}
                               value={addNotes}
@@ -275,8 +285,9 @@ console.log("Dataset for BrowseCoins:", dataset);
                             {WANT_REASONS.map((r) => (
                               <label key={r} className="mr-3">
                                 <input
+                                  id={`want-reason-${r.replace(/\s+/g, '').toLowerCase()}`}
+                                  name="want-reason"
                                   type="radio"
-                                  name="reason"
                                   checked={wantReason === r}
                                   onChange={() => setWantReason(r)}
                                 />{" "}
@@ -285,8 +296,10 @@ console.log("Dataset for BrowseCoins:", dataset);
                             ))}
                           </div>
                           <div className="mb-2">
-                            <label className="block text-sm mb-1">Budgeted Price (£)</label>
+                            <label htmlFor="want-budget" className="block text-sm mb-1">Budgeted Price (£)</label>
                             <input
+                              id="want-budget"
+                              name="want-budget"
                               type="text"
                               className="border px-2 py-1 rounded w-full"
                               value={wantBudget}
@@ -298,8 +311,10 @@ console.log("Dataset for BrowseCoins:", dataset);
                             />
                           </div>
                           <div className="mb-2">
-                            <label className="block text-sm mb-1">Notes</label>
+                            <label htmlFor="want-notes" className="block text-sm mb-1">Notes</label>
                             <textarea
+                              id="want-notes"
+                              name="want-notes"
                               className="border px-2 py-1 rounded w-full"
                               rows={2}
                               value={wantNotes}
