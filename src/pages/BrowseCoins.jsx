@@ -31,13 +31,13 @@ export default function BrowseCoins() {
   // Denomination buttons
   const denominations = useMemo(() => {
     if (!dataset.length) return [];
-    return [...new Set(dataset.map((c) => c.denomination))].sort();
+    return [...new Set(dataset.map((c) => c.Denomination))].sort();
   }, [dataset]);
 
   // Filtered & Searched
   const filtered = useMemo(() => {
     let rows = dataset;
-    if (denomFilter) rows = rows.filter((c) => c.denomination === denomFilter);
+    if (denomFilter) rows = rows.filter((c) => c.Denomination === denomFilter);
     Object.entries(filters).forEach(([key, val]) => {
       if (val) rows = rows.filter((c) => c[key] === val);
     });
@@ -45,10 +45,10 @@ export default function BrowseCoins() {
       const s = search.toLowerCase();
       rows = rows.filter(
         (c) =>
-          c.year?.toString().includes(s) ||
-          c.denomination?.toLowerCase().includes(s) ||
-          c.monarch?.toLowerCase().includes(s) ||
-          c.notes?.toLowerCase().includes(s)
+          c.Year?.toString().includes(s) ||
+          c.Denomination?.toLowerCase().includes(s) ||
+          c.Monarch?.toLowerCase().includes(s) ||
+          c.Notes?.toLowerCase().includes(s)
       );
     }
     return rows;
@@ -135,7 +135,7 @@ export default function BrowseCoins() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        {["monarch", "year", "metal"].map((key) => (
+        {["Monarch", "Year", "Metal"].map((key) => (
           <select
             key={key}
             className="border px-2 py-1 rounded-lg"
@@ -198,13 +198,13 @@ export default function BrowseCoins() {
                       }
                     />
                   </td>
-                  <td>{row.year}</td>
-                  <td>{row.denomination}</td>
-                  <td>{row.monarch}</td>
-                  <td>{row.metal}</td>
-                  <td>{row.strikeType}</td>
-                  <td>{row.variety}</td>
-                  <td>{row.notes}</td>
+                  <td>{row.Year}</td>
+                  <td>{row.Denomination}</td>
+                  <td>{row.Monarch}</td>
+                  <td>{row.Metal}</td>
+                  <td>{row["Strike Type"]}</td>
+                  <td>{row.Variety}</td>
+                  <td>{row.Notes}</td>
                   {/* Add button */}
                   <td>
                     <button
